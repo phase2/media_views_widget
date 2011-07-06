@@ -1,0 +1,125 @@
+<?php
+module_load_include("inc", 'media_views_widget', 'media_views_widget.fields');
+module_load_include("inc", "media", "includes/media.pages");
+drupal_add_js(drupal_get_path('module', 'media_views_widget') ."/media_views_widget.js");
+drupal_add_css(drupal_get_path('module', 'media_views_widget') ."/media_views_widget.css");
+
+/*
+ * implements hook_form_FORMID_alter()
+ *
+ * making the edit form ajaxy
+ */
+function media_views_widget_form_media_edit_alter(&$form, $form_state) {
+  $file = $form_state['file'];
+  if(isset($file->dialog_inner)) {
+    $form['actions']['submit']['#ajax'] = array(
+       'callback' => 'media_views_widget_mvw_update_from_dialog_callback',
+       'wrapper' => $file->dialog_inner,
+       #'wrapper' => $form['#dialog-inner'],
+       'name' => 'sumbit2',
+    );
+    $form['actions']['save'] = $form['actions']['submit'];
+    unset($form['actions']['submit']);
+    unset($form['actions']['delete']);
+  }
+}
+
+/*
+ * implements hook_FORMID_alter()
+ *
+ * making the upload form ajaxy
+ */
+function media_views_widget_form_media_add_upload_alter(&$form, $form_state) {
+  if(isset($form_state['build_info']['args'][1])) {
+    $form['submit']['#ajax'] = array(
+       'callback' => 'media_views_widget_mvw_update_from_dialog_callback',
+       'wrapper' => $form_state['build_info']['args'][1],
+       'name' => 'sumbit2',
+    );
+    $form['save'] = $form['submit'];
+    $form['save']['#value'] = 'upload';
+    $form['save']['#submit'] = $form['#submit'];
+    $form['save']['#submit'][] = 'media_views_widget_form_media_add_upload_sumbit';
+    unset($form['submit']);
+  }
+}
+/*
+ * extra submit function on add_upload
+ *
+ * setting the file in the form state so that the 
+ * media_views_widget_form_media_add_upload_sumbit can update
+ */
+function media_views_widget_form_media_add_upload_sumbit(&$form, &$form_state) {
+  $file = $form_state['values']['upload'];
+  //$file = file_load($file);
+  $form_state['file'] = $file;
+  $form_state['file']->dialog_inner = $form_state['build_info']['args'][1];
+}
+
+/*
+ * this is a #ajax callback
+ *
+ * it is used from dialogs to update a elements field and refresh it
+ */
+function media_views_widget_mvw_update_from_dialog_callback($form, $form_state) {
+  $file = $form_state['file'];
+  if(!$file) {  
+    $file->fid = $form_state['values']['fid'];
+    $file->dialog_inner = $form['#dialog_inner'];
+  }
+  $cmds['#commands'][] = ajax_command_insert(NULL, "<div class = 'media-dialog-inner' id = '{$file->dialog_inner}'></div>");
+  $cmds['#commands'][] = media_views_widget_ajax_command_update_from_dialog($file->dialog_inner, $file->fid);
+  $cmds['#type'] = 'ajax';
+  return $cmds;
+
+}
+
+/*
+ * our own ajax command builder
+ * 
+ * used to update a element from inside of the dialog
+ */
+function media_views_widget_ajax_command_update_from_dialog($dialog_inner, $fid = NULL) {
+  return ajax_command_invoke("#" . $dialog_inner, "trigger", array('update', $fid));
+}
+
+/*
+ * this is a #ajax callback
+ *
+ * it is used on the to process all of the buttons on the alt media widget
+ */
+function media_views_widget_mvw_update_callback($form, $form_state) {
+  //get file
+  $file = $form_state['file'];
+
+  //find parents and pop off the action this leaves parents replacing
+  //the element which should match the triggering_element wrapper
+  $parents = $form_state['triggering_element']['#array_parents'];
+  list($action, $other) = explode("-", array_pop($parents),2);
+  $wrapper_id = $form_state['triggering_element']['#ajax']['wrapper'];
+
+  //change the form to be just the part we want
+  $form = drupal_array_get_nested_value($form, $parents);
+
+  //set js to refresh the element
+  $cmds['#commands'][] = ajax_command_insert(NULL, drupal_render($form));
+
+  //if this is a refresh that needs a dialog open the dialog
+  if(in_array($action,array('edit','select'))) {
+    $cmds['#commands'][] = ajax_command_invoke("#media-dialog-inner-$wrapper_id", "trigger", array('open'));
+  }
+  $cmds['#type'] = 'ajax';
+  return $cmds;
+}
+
+/*
+ * implements hook_preprocess_views_view()
+ * send view results to js
+ * 
+ * TODO make this only happen on our views
+ *
+ */
+function media_views_widget_preprocess_views_view($vars) {
+  drupal_add_js(array("mvw_results" => $vars['view']->result), 'setting');
+
+}
