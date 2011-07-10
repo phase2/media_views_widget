@@ -11,7 +11,7 @@ function media_views_widget_field_widget_info() {
         'progress_indicator' => 'throbber',
         'allowed_types' => array('image'),
         'allowed_schemes' => array('public', 'private'),
-        'view' => '',
+        'view' => 'media_views_widget_default--default',
       ),
       'behaviors' => array(
         'multiple values' => FIELD_BEHAVIOR_DEFAULT,
