@@ -123,3 +123,12 @@ function media_views_widget_preprocess_views_view($vars) {
   drupal_add_js(array("mvw_results" => $vars['view']->result), 'setting');
 
 }
+/**
+ * Implementation of hook_views_api().
+ */
+function media_views_widget_views_api() {
+  list($module, $api) = func_get_args();
+  if ($module == "views" && $api == "views_default") {
+    return array("version" => "3.0");
+  }
+}

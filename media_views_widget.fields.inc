@@ -5,7 +5,7 @@
 function media_views_widget_field_widget_info() {
   return array(
     'media_generic_alt' => array(
-      'label' => t('Media file selector Alternative'),
+      'label' => t('Media Views file selector'),
       'field types' => array('media'),
       'settings' => array(
         'progress_indicator' => 'throbber',
