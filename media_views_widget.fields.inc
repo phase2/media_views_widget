@@ -107,6 +107,7 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
   $element["select-$wrapper_id"] = array(
     '#type' => 'button',
     '#value' => t('Select Media'),
+    '#name' => "select-$wrapper_id",
     '#ajax' => array(
       'callback' => "media_views_widget_mvw_update_callback",
       'wrapper' => $wrapper_id,
@@ -129,6 +130,7 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
       '#type' => 'button',
       '#value' => 'Meta Data',
       '#title' => 'Meta Data',
+      '#name' => "edit-$wrapper_id",
       '#ajax' => array(
         'callback' => "media_views_widget_mvw_update_callback",
         'wrapper' => $wrapper_id,
@@ -139,6 +141,7 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
     $element["delete-$wrapper_id"] = array(
       '#type' => 'button',
       '#value' => 'Remove',
+      '#name' => "delete-$wrapper_id",
       '#ajax' => array(
         'callback' => "media_views_widget_mvw_update_callback",
         'wrapper' => $wrapper_id,
