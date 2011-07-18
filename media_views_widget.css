@@ -1,21 +1,17 @@
 .mvw-preview {
-  float:left;
+  float: left;
   background: #eee;
-  margin:10px;
+  margin: 10px;
 }
 .mvw-field .form-submit {
-  display:block;
-  margin:10px;
-  width:100px;
+  display: block;
+  margin: 10px;
+  width: 100px;
 }
 .view-media-views-widget-default .views-row {
-  float:left;
-  margin:10px;
+  display: inline-block;
+  margin: 10px;
 }
 div.mvw-field div.form-item {
-  display:none;
-}
-.view-media-views-widget-default div.pager
-{
-  clear :both;
+  display: none;
 }
