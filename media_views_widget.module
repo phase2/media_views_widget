@@ -120,7 +120,12 @@ function media_views_widget_mvw_update_callback($form, $form_state) {
  *
  */
 function media_views_widget_preprocess_views_view($vars) {
-  drupal_add_js(array("mvw_results" => $vars['view']->result), 'setting');
+  $view = $vars['view'];
+  $js_results = array();
+  foreach($view->result as $result) {
+    $js_results[] = array( $view->base_field => $result->{$view->base_field} );
+  }
+  drupal_add_js(array("mvw_results" => $js_results), 'setting');
 
 }
 /**
