@@ -65,7 +65,7 @@ Drupal.behaviors.media_views_widget = {
           $.each(results, function(i, value) {
             i ++;
             if($(row).hasClass("views-row-" + i)) {
-              $(row).parents(".media-dialog-inner").find("[name='fid']").val(value.fid).trigger("update");
+              $(row).parents(".media-dialog-inner").find(".browse-fid").val(value.fid).trigger("update");
             }
           });
         });

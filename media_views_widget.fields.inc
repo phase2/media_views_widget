@@ -270,9 +270,13 @@ $form['#type'] = "vertical_tabs";
  */
 function media_widget_mvw_media_browser($form, $form_state, $view_name, $view_display_name, $types, $dialog_inner) {
   $form['#dialog_inner'] = $dialog_inner;
-  $form['browser']['#markup'] = views_embed_view($view_name, $view_display_name);
-  $form['fid'] = array(
+  //$form['browser']['#markup'] = views_embed_view($view_name, $view_display_name);
+  $view = views_get_view($view_name, TURE);
+  $view->set_display($view_display_name);
+  $form['browser']['#markup'] = $view->render($view_display_name); 
+  $form['fid-' . $dialog_inner] = array(
     '#type' => 'textfield',
+    '#attributes' => array("class" => "browse-fid"),
     '#ajax' => array(
        'callback' => 'media_views_widget_mvw_update_from_dialog_callback',
        'wrapper' => $dialog_inner,
