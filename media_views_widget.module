@@ -66,7 +66,7 @@ function media_views_widget_form_media_add_upload_sumbit(&$form, &$form_state) {
 function media_views_widget_mvw_update_from_dialog_callback($form, $form_state) {
   $file = $form_state['file'];
   if(!$file) {  
-    $file->fid = $form_state['values']['fid'];
+    $file->fid = $form_state['values']['fid-'.$form['#dialog_inner']];
     $file->dialog_inner = $form['#dialog_inner'];
   }
   $cmds['#commands'][] = ajax_command_insert(NULL, "<div class = 'media-dialog-inner' id = '{$file->dialog_inner}'></div>");

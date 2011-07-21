@@ -276,7 +276,7 @@ function media_widget_mvw_media_browser($form, $form_state, $view_name, $view_di
   $form['browser']['#markup'] = $view->render($view_display_name); 
   $form['fid-' . $dialog_inner] = array(
     '#type' => 'textfield',
-    '#attributes' => array("class" => "browse-fid"),
+    '#attributes' => array("class" => array("browse-fid")),
     '#ajax' => array(
        'callback' => 'media_views_widget_mvw_update_from_dialog_callback',
        'wrapper' => $dialog_inner,
