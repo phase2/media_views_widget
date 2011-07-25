@@ -56,6 +56,9 @@ function media_views_widget_field_widget_settings_form($field, $instance) {
  * Implements hook_field_widget_form().
  */
 function media_views_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  drupal_add_js(drupal_get_path('module', 'media_views_widget') ."/media_views_widget.js");
+  drupal_add_css(drupal_get_path('module', 'media_views_widget') ."/media_views_widget.css");
+
   $widget_settings = $instance['widget']['settings'];
 
   $permission = user_access('edit media');
@@ -92,6 +95,8 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
   $element['#prefix'] = "<div class ='mvw-field' id = '$wrapper_id'>";
   $element['#suffix'] = "<div class ='clearfix'></div></div>";
 
+  $element['#type'] = 'fieldset';
+  
   //field to store value
   $element['fid'] = array(
     '#type' => 'textfield',
@@ -270,10 +275,12 @@ $form['#type'] = "vertical_tabs";
  */
 function media_widget_mvw_media_browser($form, $form_state, $view_name, $view_display_name, $types, $dialog_inner) {
   $form['#dialog_inner'] = $dialog_inner;
-  //$form['browser']['#markup'] = views_embed_view($view_name, $view_display_name);
+  $form['browser']['#markup'] = views_embed_view($view_name, $view_display_name);
+  /*
   $view = views_get_view($view_name, TURE);
   $view->set_display($view_display_name);
-  $form['browser']['#markup'] = $view->render($view_display_name); 
+  $form['browser']['#markup'] = $view->render($view_display_name);
+  */ 
   $form['fid-' . $dialog_inner] = array(
     '#type' => 'textfield',
     '#attributes' => array("class" => array("browse-fid")),

@@ -1,8 +1,6 @@
 <?php
 module_load_include("inc", 'media_views_widget', 'media_views_widget.fields');
 module_load_include("inc", "media", "includes/media.pages");
-drupal_add_js(drupal_get_path('module', 'media_views_widget') ."/media_views_widget.js");
-drupal_add_css(drupal_get_path('module', 'media_views_widget') ."/media_views_widget.css");
 
 /*
  * implements hook_form_FORMID_alter()
