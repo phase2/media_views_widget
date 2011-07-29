@@ -124,7 +124,7 @@ function media_views_widget_preprocess_views_view($vars) {
   $js_results = array();
   foreach($view->result as $result) {
     if (!isset($result->{$view->base_field} )) {
-      drupal_set_message("{$view->name} does not have base field {$view->base_field} in result", 'error');
+      //drupal_set_message("{$view->name} does not have base field {$view->base_field} in result", 'error');
       return;
     }
     $js_results[] = array( $view->base_field => $result->{$view->base_field} );
