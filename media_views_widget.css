@@ -15,3 +15,6 @@
 div.mvw-field div.form-item {
   display: none;
 }
+.vertical-tabs .vertical-tabs-panes .vertical-tabs-pane legend {
+  visibility:hidden;
+}
