@@ -156,7 +156,7 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
 
   // if the edit action is invoked we populated the dialog
   // we populate the dilog with the media edit form
-  if(($action_delta === $delta) && ($action == 'edit')) {
+  if(($action_delta === $delta) && ($action == 'edit') && isset($file)) {
     $file->dialog_inner = "media-dialog-inner-$wrapper_id";
     $dialog_form = drupal_get_form('media_edit', $file);
     $element['dialog'] = array('#markup' => drupal_render($dialog_form));
