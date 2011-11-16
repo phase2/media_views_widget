@@ -6,7 +6,7 @@ function media_views_widget_field_widget_info() {
   return array(
     'media_generic_alt' => array(
       'label' => t('Media Views file selector'),
-      'field types' => array('media'),
+      'field types' => array('media', 'image'),
       'settings' => array(
         'progress_indicator' => 'throbber',
         'allowed_types' => array('image'),
@@ -67,10 +67,12 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
     return;
   }
   //find the current fid form_state beat element which beat items
+  $field_name = $element['#field_name'];
+  
   $fid = isset($items[$delta]['fid']) ? $items[$delta]['fid'] : 0;
   $fid = isset($element['#value']['fid']) ? $element['#value']['fid'] : $fid;
-  $fid = isset($form_state['values'][$element['#field_name']][$langcode][$delta]['fid']) ?
-    $form_state['values'][$element['#field_name']][$langcode][$delta]['fid'] : $fid;
+  $fid = isset($form_state['values'][$field_name][$langcode][$delta]['fid']) ?
+    $form_state['values'][$field_name][$langcode][$delta]['fid'] : $fid;
 
 
   // if we are rebuilding after a trigger
@@ -78,16 +80,22 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
   $action = NULL;
   $action_delta = NULL;
   if(isset($form_state['triggering_element']['#array_parents'])) {
-    list($action, $other) = explode("-", end($form_state['triggering_element']['#array_parents']), 2);
-    $action_delta = prev($form_state['triggering_element']['#array_parents']);
-    reset($form_state['triggering_element']['#array_parents']);
+    $action_data = explode("-", end($form_state['triggering_element']['#array_parents']), 2);
+    if (count($action_data) == 2) {
+      list($action, $other) = $action_data;
+      $action_delta = prev($form_state['triggering_element']['#array_parents']);
+      $action_lang  = prev($form_state['triggering_element']['#array_parents']);
+      $action_field = prev($form_state['triggering_element']['#array_parents']);
+      reset($form_state['triggering_element']['#array_parents']);
+    }
   }
 
   // if this is a delete then set the fid = 0;
-  if(($action_delta == $delta) && ($action == 'delete')) {
+  // CHECK THE FIELD NAME to be sure we are deleting the correct value
+  if(($action_delta == $delta) && ($action == 'delete') && ($action_field == $field_name)) {
     $fid = 0;
-    $form_state['values'][$element['#field_name']][$langcode][$delta]['fid'] = $fid;
-    $form_state['input'][$element['#field_name']][$langcode][$delta]['fid'] = $fid;
+    $form_state['values'][$field_name][$langcode][$delta]['fid'] = $fid;
+    $form_state['input'][$field_name][$langcode][$delta]['fid'] = $fid;
   }
 
   //wrapper our field so we can find and refesh it
@@ -107,6 +115,11 @@ function media_views_widget_field_widget_form(&$form, &$form_state, $field, $ins
       'wrapper' => $wrapper_id,
       'event' => 'refresh',
     ),
+  );
+
+  $element['display'] = array(
+    '#type' => 'value',
+    '#default_value' => !empty($field['settings']['display_default']) ? $field['settings']['display_default'] : 0,
   );
 
   $element["select-$wrapper_id"] = array(
@@ -240,6 +253,14 @@ $form['#type'] = "vertical_tabs";
     ),
     */
   );
+  // kind of a kludge to determine what kind of files we want to browse: image, video or both
+  // use jpg for image, mp4 for video
+  $types = array();
+  $extensions = explode( ' ', $instance['settings']['file_extensions']);
+  if (in_array('jpg', $extensions)) { $types[] = 'image'; }
+  if (in_array('mp4', $extensions)) { $types[] = 'video'; }
+  if (count($types) == 0) { $types[] = 'image'; }
+
   foreach ($views as $info) {
     $form[$info['title']] = array(
       '#type' => 'fieldset',
@@ -249,7 +270,6 @@ $form['#type'] = "vertical_tabs";
       'browse_form' => drupal_get_form('media_widget_mvw_media_browser',$info['name'], $info['display'], $types, $dialog_inner),
     );
   }
-  $types = array('image');
   /*
   $form['edit'] = array(
     '#type' => 'fieldset',

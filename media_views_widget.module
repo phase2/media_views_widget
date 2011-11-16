@@ -90,13 +90,17 @@ function media_views_widget_ajax_command_update_from_dialog($dialog_inner, $fid 
  */
 function media_views_widget_mvw_update_callback($form, $form_state) {
   //get file
-  $file = $form_state['file'];
+  // $file = $form_state['file'];
 
   //find parents and pop off the action this leaves parents replacing
   //the element which should match the triggering_element wrapper
+  $action = '';
   $parents = $form_state['triggering_element']['#array_parents'];
-  list($action, $other) = explode("-", array_pop($parents),2);
-  $wrapper_id = $form_state['triggering_element']['#ajax']['wrapper'];
+  $action_data = explode("-", array_pop($parents),2);
+  if (count($action_data) >= 2) {
+    list($action, $other) = $action_data;
+    $wrapper_id = $form_state['triggering_element']['#ajax']['wrapper'];
+  }
 
   //change the form to be just the part we want
   $form = drupal_array_get_nested_value($form, $parents);
